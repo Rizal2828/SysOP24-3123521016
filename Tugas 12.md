@@ -36,25 +36,37 @@ Masalah dining philosophers (atau masalah filsuf makan) adalah sebuah masalah kl
   
 # Solusi dengan Semaphore
 #include <pthread.h>
+
 #include <semaphore.h>
+
 #include <stdio.h>
+
 #include <unistd.h>
 
 #define N 5 // Jumlah filsuf
+
 #define THINKING 0
+
 #define HUNGRY 1
+
 #define EATING 2
+
 #define LEFT (i + 4) % N
+
 #define RIGHT (i + 1) % N
 
 int state[N];
+
 int phil[N] = {0, 1, 2, 3, 4};
 
 sem_t mutex;
+
 sem_t S[N];
 
 void test(int i)
+
 {
+
     if (state[i] == HUNGRY && state[LEFT] != EATING && state[RIGHT] != EATING)
     {
         // keadaan di mana filsuf dapat makan
@@ -67,7 +79,9 @@ void test(int i)
 }
 
 void take_fork(int i)
+
 {
+
     sem_wait(&mutex);
     state[i] = HUNGRY;
     printf("Filsuf %d sedang lapar\n", i + 1);
@@ -78,7 +92,9 @@ void take_fork(int i)
 }
 
 void put_fork(int i)
+
 {
+
     sem_wait(&mutex);
     state[i] = THINKING;
     printf("Filsuf %d meletakkan garpu %d dan %d\n", i + 1, LEFT + 1, i + 1);
@@ -89,7 +105,9 @@ void put_fork(int i)
 }
 
 void* philosopher(void* num)
+
 {
+
     while (1)
     {
         int* i = num;
@@ -101,7 +119,9 @@ void* philosopher(void* num)
 }
 
 int main()
+
 {
+
     int i;
     pthread_t thread_id[N];
 
@@ -132,16 +152,23 @@ Masalah Reader-Writer adalah masalah sinkronisasi klasik dalam ilmu komputer yan
 
 # Solusi dengan Semaphore
 #include <pthread.h>
+
 #include <semaphore.h>
+
 #include <stdio.h>
+
 #include <unistd.h>
 
 sem_t wrt;
+
 pthread_mutex_t mutex;
+
 int read_count = 0;
+
 int data = 0;  // Sumber daya bersama
 
 void* writer(void* wno) {
+
     while (1) {
         // Penulis menunggu untuk mendapatkan akses ke sumber daya
         sem_wait(&wrt);
@@ -155,6 +182,7 @@ void* writer(void* wno) {
 }
 
 void* reader(void* rno) {
+
     while (1) {
         // Pembaca mendapatkan akses ke read_count
         pthread_mutex_lock(&mutex);
@@ -182,6 +210,7 @@ void* reader(void* rno) {
 }
 
 int main() {
+
     pthread_t read[5], write[2];
     pthread_mutex_init(&mutex, NULL);
     sem_init(&wrt, 0, 1);
